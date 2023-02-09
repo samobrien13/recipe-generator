@@ -3,10 +3,9 @@ import { useRouter } from 'next/router';
 
 // !STARTERCONF Change these default meta
 const defaultMeta = {
-  title: 'GPT starter with Next.js + Tailwind CSS + TypeScript',
-  siteName: 'GPT starter with Next.js + Tailwind CSS + TypeScript',
-  description:
-    'A starter for creating your own GPT powered thing using Next.js, Tailwind CSS, and TypeScript with Absolute Import, Seo, Link component, pre-configured with Husky',
+  title: 'Recipe Generator',
+  siteName: 'Recipe Generator',
+  description: 'A site to generate recipes from a list of ingredients.',
   /** Without additional '/' on the end, e.g. https://workoutai.up.railway.app */
   url: 'https://tsnext-tw.thcl.dev',
   type: 'website',
