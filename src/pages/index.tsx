@@ -1,179 +1,20 @@
 import { FormEvent, useEffect, useState } from 'react';
+import { BiSelectMultiple } from 'react-icons/bi';
 
 import useLocalStorage from '@/hooks/useLocalStorage';
 
+import { ingredients } from '@/data/ingredients';
+
 import Button from '@/components/buttons/Button';
+import IconButton from '@/components/buttons/IconButton';
 import Layout from '@/components/layout/Layout';
 import Seo from '@/components/Seo';
 
-const meat = [
-  {
-    id: 'beefMince',
-    name: 'Mince (Beef)',
-  },
-  {
-    id: 'porkMince',
-    name: 'Mince (Pork)',
-  },
-  {
-    id: 'steak',
-    name: 'Steak',
-  },
-  {
-    id: 'chickenBreast',
-    name: 'Chicken (Breast)',
-  },
-  {
-    id: 'chickenThigh',
-    name: 'Chicken (Thigh)',
-  },
-  {
-    id: 'chickenWhole',
-    name: 'Chicken (Whole)',
-  },
-];
-
-const vegetables = [
-  {
-    id: 'broccoli',
-    name: 'Broccoli',
-  },
-  {
-    id: 'carrot',
-    name: 'Carrot',
-  },
-  {
-    id: 'cauliflower',
-    name: 'Cauliflower',
-  },
-  {
-    id: 'capsicum',
-    name: 'Capsicum',
-  },
-  {
-    id: 'potato',
-    name: 'Potato',
-  },
-];
-
-const staples = [
-  {
-    id: 'rice',
-    name: 'Rice',
-  },
-  {
-    id: 'pasta',
-    name: 'Pasta',
-  },
-  {
-    id: 'riceNoodles',
-    name: 'Rice Noodles',
-  },
-  {
-    id: 'eggNoodles',
-    name: 'Egg Noodles',
-  },
-  {
-    id: 'bread',
-    name: 'Bread',
-  },
-  {
-    id: 'wraps',
-    name: 'Wraps',
-  },
-];
-
-const sauces = [
-  {
-    id: 'soy',
-    name: 'Soy',
-  },
-  {
-    id: 'gochujang',
-    name: 'Gochujang',
-  },
-  {
-    id: 'oyster',
-    name: 'Oyster',
-  },
-  {
-    id: 'hoisin',
-    name: 'Hoisin',
-  },
-  {
-    id: 'sweetChilli',
-    name: 'Sweet Chilli',
-  },
-  {
-    id: 'sriracha',
-    name: 'Sriracha',
-  },
-  {
-    id: 'whiteWineVinegar',
-    name: 'White Wine Vinegar',
-  },
-  {
-    id: 'appleCiderVinegar',
-    name: 'Apple Cider Vinegar',
-  },
-  {
-    id: 'fishSauce',
-    name: 'Fish Sauce',
-  },
-  {
-    id: 'sesameOil',
-    name: 'Sesame Oil',
-  },
-];
-
-const dairy = [
-  {
-    id: 'milk',
-    name: 'Milk',
-  },
-  {
-    id: 'cream',
-    name: 'Cream',
-  },
-  {
-    id: 'cheddarCheese',
-    name: 'Cheese (Cheddar)',
-  },
-  {
-    id: 'yoghurt',
-    name: 'Yoghurt (Greek)',
-  },
-];
-
-const allIngredients = [
-  {
-    title: 'Meat',
-    items: meat,
-  },
-  {
-    title: 'Vegetables',
-    items: vegetables,
-  },
-  {
-    title: 'Staples',
-    items: staples,
-  },
-  {
-    title: 'Sauces',
-    items: sauces,
-  },
-  {
-    title: 'Dairy',
-    items: dairy,
-  },
-];
-
 export default function HomePage() {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [ingredients, setIngredients] = useLocalStorage<Array<string>>(
-    'input',
-    []
-  );
+  const [selectedIngredients, setSelectedIngredients] = useLocalStorage<
+    Array<string>
+  >('input', []);
   const [apiOutput, setApiOutput] = useLocalStorage('apiOutput', '');
   const [mounted, setMounted] = useState(false);
 
@@ -185,11 +26,11 @@ export default function HomePage() {
     setIsGenerating(true);
     event.preventDefault();
 
-    console.log('Calling API with input:', ingredients);
+    console.log('Calling API with input:', selectedIngredients);
 
     const apiInput =
-      'Generate a recipe using any of the following ingredients: ' +
-      ingredients.join(', ');
+      'Generate a recipe using some of the following ingredients: ' +
+      selectedIngredients.join(', ');
 
     try {
       const response = await fetch('/api/generate', {
@@ -234,15 +75,34 @@ export default function HomePage() {
       });
   };
 
+  const onSelectAll = (title: string) => {
+    const ingredientItems =
+      ingredients.find((i) => i.title === title)?.items.map((i) => i.name) ??
+      [];
+    if (ingredientItems.every((i) => selectedIngredients.includes(i))) {
+      setSelectedIngredients(
+        selectedIngredients.filter(
+          (ingredient) =>
+            !ingredients
+              .find((i) => i.title === title)
+              ?.items.map((i) => i.name)
+              .includes(ingredient)
+        )
+      );
+    } else {
+      setSelectedIngredients([...selectedIngredients, ...ingredientItems]);
+    }
+  };
+
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log(event.target);
     event.target.checked
-      ? setIngredients([...ingredients, event.target.value])
-      : setIngredients(
-          ingredients.filter((ingredient) => ingredient !== event.target.value)
+      ? setSelectedIngredients([...selectedIngredients, event.target.value])
+      : setSelectedIngredients(
+          selectedIngredients.filter(
+            (ingredient) => ingredient !== event.target.value
+          )
         );
-
-    console.log(ingredients);
   };
 
   return (
@@ -261,13 +121,21 @@ export default function HomePage() {
               onSubmit={callGenerateEndpoint}
               className='w-full space-y-2 sm:w-2/3 md:w-1/2'
             >
-              {allIngredients.map(({ title, items }) => {
+              {ingredients.map(({ title, items }) => {
                 return (
                   <section
                     key={title}
-                    className='rounded-xl border border-gray-500 p-2'
+                    className='space-y-3 rounded-xl border border-gray-500 p-2'
                   >
-                    <h3>{title}</h3>
+                    <div className='flex flex-row justify-between'>
+                      <h3>{title}</h3>
+                      <div className='space-x-2'>
+                        <IconButton
+                          icon={BiSelectMultiple}
+                          onClick={() => onSelectAll(title)}
+                        />
+                      </div>
+                    </div>
                     <div className='grid grid-cols-2 md:grid-cols-3'>
                       {items.map(({ id, name }) => {
                         return (
@@ -277,7 +145,7 @@ export default function HomePage() {
                               id={id}
                               name={name}
                               value={name}
-                              checked={ingredients.includes(name)}
+                              checked={selectedIngredients.includes(name)}
                               onChange={onChange}
                             />
                             <label htmlFor={id}>{name}</label>
