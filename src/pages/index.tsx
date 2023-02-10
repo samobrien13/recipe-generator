@@ -6,9 +6,167 @@ import Button from '@/components/buttons/Button';
 import Layout from '@/components/layout/Layout';
 import Seo from '@/components/Seo';
 
-// !STARTERCONF -> Select !STARTERCONF and CMD + SHIFT + F
-// Before you begin editing, follow all comments with `STARTERCONF`,
-// to customize the default configuration.
+const meat = [
+  {
+    id: 'beefMince',
+    name: 'Mince (Beef)',
+  },
+  {
+    id: 'porkMince',
+    name: 'Mince (Pork)',
+  },
+  {
+    id: 'steak',
+    name: 'Steak',
+  },
+  {
+    id: 'chickenBreast',
+    name: 'Chicken (Breast)',
+  },
+  {
+    id: 'chickenThigh',
+    name: 'Chicken (Thigh)',
+  },
+  {
+    id: 'chickenWhole',
+    name: 'Chicken (Whole)',
+  },
+];
+
+const vegetables = [
+  {
+    id: 'broccoli',
+    name: 'Broccoli',
+  },
+  {
+    id: 'carrot',
+    name: 'Carrot',
+  },
+  {
+    id: 'cauliflower',
+    name: 'Cauliflower',
+  },
+  {
+    id: 'capsicum',
+    name: 'Capsicum',
+  },
+  {
+    id: 'potato',
+    name: 'Potato',
+  },
+];
+
+const staples = [
+  {
+    id: 'rice',
+    name: 'Rice',
+  },
+  {
+    id: 'pasta',
+    name: 'Pasta',
+  },
+  {
+    id: 'riceNoodles',
+    name: 'Rice Noodles',
+  },
+  {
+    id: 'eggNoodles',
+    name: 'Egg Noodles',
+  },
+  {
+    id: 'bread',
+    name: 'Bread',
+  },
+  {
+    id: 'wraps',
+    name: 'Wraps',
+  },
+];
+
+const sauces = [
+  {
+    id: 'soy',
+    name: 'Soy',
+  },
+  {
+    id: 'gochujang',
+    name: 'Gochujang',
+  },
+  {
+    id: 'oyster',
+    name: 'Oyster',
+  },
+  {
+    id: 'hoisin',
+    name: 'Hoisin',
+  },
+  {
+    id: 'sweetChilli',
+    name: 'Sweet Chilli',
+  },
+  {
+    id: 'sriracha',
+    name: 'Sriracha',
+  },
+  {
+    id: 'whiteWineVinegar',
+    name: 'White Wine Vinegar',
+  },
+  {
+    id: 'appleCiderVinegar',
+    name: 'Apple Cider Vinegar',
+  },
+  {
+    id: 'fishSauce',
+    name: 'Fish Sauce',
+  },
+  {
+    id: 'sesameOil',
+    name: 'Sesame Oil',
+  },
+];
+
+const dairy = [
+  {
+    id: 'milk',
+    name: 'Milk',
+  },
+  {
+    id: 'cream',
+    name: 'Cream',
+  },
+  {
+    id: 'cheddarCheese',
+    name: 'Cheese (Cheddar)',
+  },
+  {
+    id: 'yoghurt',
+    name: 'Yoghurt (Greek)',
+  },
+];
+
+const allIngredients = [
+  {
+    title: 'Meat',
+    items: meat,
+  },
+  {
+    title: 'Vegetables',
+    items: vegetables,
+  },
+  {
+    title: 'Staples',
+    items: staples,
+  },
+  {
+    title: 'Sauces',
+    items: sauces,
+  },
+  {
+    title: 'Dairy',
+    items: dairy,
+  },
+];
 
 export default function HomePage() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -72,11 +230,7 @@ export default function HomePage() {
       .trim()
       .split('\n')
       .map((item, key) => {
-        return (
-          <p key={key} className='py-2'>
-            {item}
-          </p>
-        );
+        return <p key={key}>{item}</p>;
       });
   };
 
@@ -98,137 +252,58 @@ export default function HomePage() {
 
       <main>
         <section className='bg-dark'>
-          <div className='layout relative flex min-h-screen flex-col items-center py-12 text-center text-white'>
-            <h1 className='mt-4'>Recipe Generator</h1>
-            <p className='mt-2 text-sm text-gray-300'>
+          <div className='layout relative flex min-h-screen flex-col items-center space-y-4 py-12 text-white'>
+            <h1>Recipe Generator</h1>
+            <p className='text-sm text-gray-300'>
               Generate a recipe from a list of ingredients.
             </p>
-            <form onSubmit={callGenerateEndpoint}>
-              <h2>Meat</h2>
-              <div className='space-x-2'>
-                <input
-                  type='checkbox'
-                  id='mince'
-                  name='mince'
-                  value='Mince'
-                  onChange={onChange}
-                />
-                <label htmlFor='mince'>Mince</label>
-                <input
-                  type='checkbox'
-                  id='steak'
-                  name='steak'
-                  value='Steak'
-                  onChange={onChange}
-                />
-                <label htmlFor='steak'>Steak</label>
-                <input
-                  type='checkbox'
-                  id='chickenBreast'
-                  name='chickenBreast'
-                  value='Chicken Breast'
-                  onChange={onChange}
-                />
-                <label htmlFor='chickenBreast'>Chicken Breast</label>
+            <form
+              onSubmit={callGenerateEndpoint}
+              className='w-full space-y-2 sm:w-2/3 md:w-1/2'
+            >
+              {allIngredients.map(({ title, items }) => {
+                return (
+                  <section
+                    key={title}
+                    className='rounded-xl border border-gray-500 p-2'
+                  >
+                    <h3>{title}</h3>
+                    <div className='grid grid-cols-2 md:grid-cols-3'>
+                      {items.map(({ id, name }) => {
+                        return (
+                          <div key={id} className='inline-block space-x-2'>
+                            <input
+                              type='checkbox'
+                              id={id}
+                              name={name}
+                              value={name}
+                              checked={ingredients.includes(name)}
+                              onChange={onChange}
+                            />
+                            <label htmlFor={id}>{name}</label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+              <div className='flex justify-center'>
+                <Button
+                  className=''
+                  isLoading={isGenerating}
+                  variant='outline'
+                  isDarkBg={true}
+                  type='submit'
+                >
+                  Generate
+                </Button>
               </div>
-              <h2>Vegetables</h2>
-              <div className='space-x-2'>
-                <input
-                  type='checkbox'
-                  id='broccoli'
-                  name='broccoli'
-                  value='Broccoli'
-                  onChange={onChange}
-                />
-                <label htmlFor='broccoli'>Broccoli</label>
-                <input
-                  type='checkbox'
-                  id='capsicum'
-                  name='capsicum'
-                  value='Capsicum'
-                  onChange={onChange}
-                />
-                <label htmlFor='capsicum'>Capsicum</label>
-              </div>
-              <h2>Staples</h2>
-              <div className='space-x-2'>
-                <input
-                  type='checkbox'
-                  id='rice'
-                  name='rice'
-                  value='Rice'
-                  onChange={onChange}
-                />
-                <label htmlFor='rice'>Rice</label>
-                <input
-                  type='checkbox'
-                  id='Pasta'
-                  name='Pasta'
-                  value='Pasta'
-                  onChange={onChange}
-                />
-                <label htmlFor='capsicum'>Pasta</label>
-              </div>
-              <h2>Sauces</h2>
-              <div className='space-x-2'>
-                <input
-                  type='checkbox'
-                  id='hoisin'
-                  name='hoisin'
-                  value='Hoisin'
-                  onChange={onChange}
-                />
-                <label htmlFor='hoisin'>Hoisin</label>
-                <input
-                  type='checkbox'
-                  id='soy'
-                  name='Soy'
-                  value='Soy'
-                  onChange={onChange}
-                />
-                <label htmlFor='soy'>Soy</label>
-              </div>
-              <h2>Dairy</h2>
-              <div className='space-x-2'>
-                <input
-                  type='checkbox'
-                  id='cheddar'
-                  name='cheddar'
-                  value='Cheddar'
-                  onChange={onChange}
-                />
-                <label htmlFor='cheddar'>Cheddar</label>
-                <input
-                  type='checkbox'
-                  id='cream'
-                  name='cream'
-                  value='Cream'
-                  onChange={onChange}
-                />
-                <label htmlFor='cream'>Cream</label>
-                <input
-                  type='checkbox'
-                  id='sourCream'
-                  name='sourCream'
-                  value='SourCream'
-                  onChange={onChange}
-                />
-                <label htmlFor='sourCream'>SourCream</label>
-              </div>
-              <Button
-                className='mt-4'
-                isLoading={isGenerating}
-                variant='outline'
-                isDarkBg={true}
-                type='submit'
-              >
-                Generate
-              </Button>
             </form>
 
             {mounted && apiOutput && (
               <div className='mt-8'>
-                <h2>Output</h2>
+                <h3>Output</h3>
                 <div className='mt-2 text-gray-300'>
                   {formatOutput(apiOutput)}
                 </div>
